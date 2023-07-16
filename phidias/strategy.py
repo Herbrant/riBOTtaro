@@ -13,7 +13,7 @@ from phidias.Agent import *
 # Queue
 # --------------------------------------------------------------------
 class queue_element(Belief): pass
-class add(Procedure): pass
+class enqueue(Procedure): pass
 class go(Procedure): pass
 class clear(Procedure): pass
 
@@ -21,6 +21,7 @@ class clear(Procedure): pass
 # Web Socket
 # --------------------------------------------------------------------
 class go_to(Belief): pass
+class add(Reactor): pass
 class target_reached(Reactor): pass
 
 
@@ -31,14 +32,14 @@ def_vars('X', 'Y', 'F')
 # ---------------------------------------------------------------------
 class main(Agent):
     def main(self):
-        add(X,Y) >> [ +queue_element(X,Y) ]
+        enqueue(X,Y) >> [ +queue_element(X,Y), show_line("Aggiunto (", X, ",", Y, ") alla coda di target.") ]
         go() / queue_element(X,Y) >> [ -queue_element(X,Y), go(X,Y), show_line("Nuovo target: (", X, ",", Y, ")")]
         clear() / queue_element(X,Y) >> [ -queue_element(X,Y), clear(), show_line("La coppia (", X, ",", Y, ") è stata cancellata.") ]
         
         # Web socket
         go(X,Y) >> [ +go_to(X,Y)[{'to': 'robot@127.0.0.1:6566'}] ]
-        +target_reached()[{'from':F}] >> [ show_line("Target raggiunto"), go() ]
-
+        +target_reached()[{'from': F}] >> [ show_line("Target raggiunto"), go() ]
+        +add(X,Y)[{'from': F}] >> [ show_line(F, ": add(", X, ",", Y, ")."), enqueue(X,Y) ]
 ag = main()
 ag.start()
 
