@@ -35,7 +35,7 @@ class Grassfire():
         block_width = self.width / rows
         block_height = self.height / cols
         
-        return (math.floor(coordinates[0] / block_height + block_height/2.0 - 1) - 1, math.floor(coordinates[1] / block_width + block_width / 2.0 - 1) - 1)
+        return (math.floor(coordinates[0] / block_height), math.floor(coordinates[1] / block_width))
     
     def to_coordinates(self, indexes):
         # Divido la dimensione dello spazio in blocchi della stessa dimensione
@@ -45,7 +45,7 @@ class Grassfire():
         block_height = self.height / cols
         
         # Restituisco le coordinate del centro del blocco
-        return (round(indexes[0] * block_height + block_height/2.0, 2), round(indexes[1] *block_width + block_width/2.0, 2))
+        return (indexes[0] * block_height + block_height/2.0, indexes[1] *block_width + block_width/2.0)
     
     def check_adjacent(self, grid, cell, currentDepth):
         (rows, cols) = grid.shape
@@ -89,7 +89,8 @@ class Grassfire():
                 return nextCell
     
     def reset_grid(self, goal):
-        res_grid = self.grid
+        res_grid = np.copy(self.grid)
+        
         for i in range(len(grid)):
             for j in range(len(grid[i])):
                 if res_grid[i][j] == 0:
@@ -103,7 +104,9 @@ class Grassfire():
         return res_grid
 
     def find_path(self, goal):
+        print(self.grid)
         grid = self.reset_grid(goal)
+        print(grid)
         depth = 0
         destFound = False
         cellsExhausted = False
@@ -150,29 +153,37 @@ class Grassfire():
 
     def on_belief(self, _from, name, terms):
         print(_from, name, terms)
+        
+        print("START:", self.position)
         indexes = self.to_indexes(terms)
+        print("END:", indexes)
+        
         path = self.find_path(indexes)
-        print(path)
-        coordinates = [self.to_coordinates(x) for x in path]       
         
-        print("minitargets: ", coordinates)
-        
-        for c in coordinates:
-            Messaging.send_belief(self.phidias_agent, 'add_minitarget_reactor', c, 'main')
+        if len(path) > 0:
+            coordinates = [self.to_coordinates(x) for x in path]       
+            
+            print("minitargets: ", coordinates)
+            
+            for c in coordinates:
+                Messaging.send_belief(self.phidias_agent, 'add_minitarget_reactor', c, 'main')
+            
+            self.position = indexes
+        else:
+            print("No path found.")
         
         Messaging.send_belief(self.phidias_agent, "go_to_minitarget_reactor", [], 'main')
-        
-        self.position = (indexes[0], indexes[1])
 
 
 # Esempio di utilizzo
-grid = [
-    [0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0]
-]
+# grid = [
+#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0]
+# ]
+grid = [[0 for x in range(100)] for x in range(100)]
 
 if __name__ == '__main__':
     a = Grassfire(grid, 0.7, 0.5)
