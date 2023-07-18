@@ -6,3 +6,5 @@ requests==2.28.2
 pygame==2.3.0
 PyOpenGL==3.1.6
 pyserial==3.5
+prompt_toolkit
+parse
