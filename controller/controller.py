@@ -1,73 +1,79 @@
+import websocket
 import sys
 import math
 from pathlib import Path
-from PyQt5.QtWidgets import QApplication
 
 CURRENT_POSITION = Path(__file__).parent
 sys.path.append(f"{CURRENT_POSITION}/../")
 
-from lib.models.cart2d import TwoWheelsCart2DEncodersOdometry
-from lib.models.robot import RoboticSystem
-from lib.controllers.standard import PIDSat
-from lib.data.plot import DataPlotter
-from lib.gui.gui_2d import CartWindow
+from lib.phidias.phidias_interface import start_message_server_http, Messaging
 from lib.models.virtual_robot import SpeedProfileGenerator2D, SpeedProfileGenerator
+from lib.controllers.control2d import Polar2DController, Path2D
+from lib.controllers.standard import PIDSat
+from lib.models.robot import RoboticSystem
+from lib.models.cart2d import TwoWheelsCart2DEncodersOdometry
+from PyQt5.QtWidgets import QApplication
+from lib.gui.gui_2d import CartWindow
 
 
 class Cart2DRobot(RoboticSystem):
 
     def __init__(self):
-        super().__init__(1e-3) # delta_t = 1e-3
-        # Mass = 20kg
+        super().__init__(1e-3)  # delta_t = 1e-3
+        # Mass = 1kg
         # radius = 15cm
         # friction = 0.8
-        # Traction Wheels, radius = 2.5cm, wheelbase = 20cm
-        # Sensing Wheels, radius = 2cm, wheelbase = 24cm
-        # Encoder resolution = 4000 ticks/revolution
+
         self.cart = TwoWheelsCart2DEncodersOdometry(20, 0.15, 0.8, 0.8,
                                                     0.025, 0.025, 0.2,
                                                     0.02, 0.02, 0.24, 2*math.pi/4000.0)
-        self.plotter = DataPlotter()
+        
         # 5 Nm of max torque, antiwindup
-        self.left_controller = PIDSat(1.0, 2.0, 0.0, 5, True)
-        self.right_controller = PIDSat(1.0, 2.0, 0.0, 5, True)
+        self.left_controller = PIDSat(8.0, 3.0, 0.0, 5, True)
+        self.right_controller = PIDSat(8.0, 3.0, 0.0, 5, True)
 
-        self.target = (0.1, 0.4)
-        self.linear_speed_profile_controller = SpeedProfileGenerator2D(self.target, 2.0, 0.1, 0.1)
-        self.angular_speed_profile_controller = SpeedProfileGenerator(0, 2, 4, 4)
+        # Path controller
+        self.polar_controller = Polar2DController(2.5, 1, 2.0, 1)
+        self.path_controller = Path2D(1, 1.5, 1.5, 0.01)  # tolerance 1cm
+        self.path_controller.set_path([(0, 0)])
+        (x, y, _) = self.get_pose()
+        self.path_controller.start((x, y))
+        self.target_reached = False
+        
+        # Networking
+        self.phidias_agent = ''
+        self.http_server_thread = start_message_server_http(self)
+        #self.ws = websocket.WebSocket()
+        #self.ws.connect("ws://127.0.0.1:8000")
 
     def run(self):
-
-        v_target = self.linear_speed_profile_controller.evaluate(self.delta_t, self.get_pose())
-
-        self.angular_speed_profile_controller.set_target(self.linear_speed_profile_controller.target_heading)
-        w_target = self.angular_speed_profile_controller.evaluate(self.delta_t, self.get_pose()[2])
-
-        (vl, vr) = self.cart.get_wheel_speed()
-
-        vref_l = v_target - w_target * self.cart.encoder_wheelbase / 2.0
-        vref_r = v_target + w_target * self.cart.encoder_wheelbase / 2.0
-
-        # same vref
-        Tleft = self.left_controller.evaluate(self.delta_t, vref_l, vl)
-        Tright = self.right_controller.evaluate(self.delta_t, vref_r, vr)
-
-        self.cart.evaluate(self.delta_t, Tleft, Tright)
-
-        self.plotter.add( 't', self.t)
-        self.plotter.add( 'vl', vl)
-        self.plotter.add( 'vr', vr)
-        self.plotter.add( 'vref_l', vref_l)
-        self.plotter.add( 'vref_r', vref_r)
-        if self.t > 1.2:
-            self.plotter.plot( ['t', 'time'] , [ [ 'vref_l', 'Vref' ],
-                                                 [ 'vl', 'VL' ] ])
-            self.plotter.plot( ['t', 'time'] , [ [ 'vref_r', 'Vref' ],
-                                                 [ 'vr', 'VR' ] ])
-            self.plotter.show()
-            return False
+        #self.ws.send("Pippo non mi convalida la materia")
+        pose = self.get_pose()
+        target = self.path_controller.evaluate(self.delta_t, pose)
+        
+        print("Target:", target)
+        
+        if target is not None:
+            # polar control
+            (v_target, w_target) = self.polar_controller.evaluate(self.delta_t, target[0], target[1], pose)
+            vref_l = v_target - w_target * self.cart.encoder_wheelbase / 2.0
+            vref_r = v_target + w_target * self.cart.encoder_wheelbase / 2.0
+            
+            (vl, vr) = self.cart.get_wheel_speed()
+            # speed control (left, right)
+            Tleft = self.left_controller.evaluate(self.delta_t, vref_l, vl)
+            Tright = self.right_controller.evaluate(self.delta_t, vref_r, vr)
+            
+            # robot model
+            self.cart.evaluate(self.delta_t, Tleft, Tright)
         else:
-            return True
+            if not self.target_reached:
+                self.target_reached = True
+                if self.phidias_agent != '':
+                    print("Target")
+                    Messaging.send_belief(self.phidias_agent, 'target_reached', [], 'robot')
+        
+        return True
 
     def get_pose(self):
         return self.cart.get_pose()
@@ -75,9 +81,21 @@ class Cart2DRobot(RoboticSystem):
     def get_speed(self):
         return self.cart.get_speed()
 
+    def on_belief(self, _from, name, terms):
+        print(_from, name, terms)
+        self.phidias_agent = _from
+        
+        if name == 'go_to':
+            self.target_reached = False
+            self.path_controller.set_path([(terms[0], terms[1])])
+            (x, y, _) = self.get_pose()
+            self.path_controller.start((x, y))
+
 
 if __name__ == '__main__':
     cart_robot = Cart2DRobot()
+    #cart_robot.http_server_thread.join()
     app = QApplication(sys.argv)
     ex = CartWindow(cart_robot)
     sys.exit(app.exec_())
+
