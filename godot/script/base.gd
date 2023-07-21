@@ -1,11 +1,5 @@
 extends Node2D
 
-
-var server = TCPServer.new()
-var socket = WebSocketPeer.new()
-var stream : StreamPeerTCP
-var PORT = 8080
-
 func load_map():
 	var file = FileAccess.open("res://config/matrix.txt", FileAccess.READ)
 	var line = ""
@@ -20,37 +14,34 @@ func load_map():
 
 func set_map():
 	var obstacle_scene = load("res://scene/Obstacle.tscn")
-	var screen_size = get_viewport_rect().size
+	var target_scene = load("res://scene/target.tscn")
+	var screen_size = get_viewport().get_visible_rect().size
 	print(screen_size)
 	
 	var m = load_map()
 	
-	for i in range(len(m)):
+	var square_size: Vector2
+	square_size.y = screen_size[1]/len(m)
+	square_size.x = screen_size[0]/len(m[0])
+	
+	for i in range(len(m) - 1):
 		for j in range(len(m[i])):
 			if m[i][j] == "1":
 				var obj = obstacle_scene.instantiate()
-				obj.position.y = screen_size[0]/len(m) * i
-				obj.position.x = screen_size[1]/len(m[i]) * j
+				obj.position.y = square_size.y * i + 90
+				obj.position.x = square_size.x * j + 55
+				
 				add_child(obj)
-
-
-
-func info(msg):
-	print(msg)
+#			elif m[i][j] == "X":
+#				var obj = target_scene.instantiate()
+#				obj.position.y = square_size.y * i + 90
+#				obj.position.x = square_size.x * j + 55
+#
+#				add_child(obj)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	set_map()
-	server.listen(PORT)
 
 func _process(delta):
-	var conn = server.is_connection_available()
-	if conn and !stream:
-		stream = server.take_connection()
-		stream.set_no_delay(true)
-		socket.accept_stream(stream)
-		
-		while socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
-			socket.poll()
-		
-		socket.send_text("Test message from server")
+	pass

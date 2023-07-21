@@ -89,11 +89,13 @@ layer_0/tile_data = PackedInt32Array(-1, 1, 0, 65535, 1, 1, 131071, 1, 2, 196607
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 top_level = true
+light_mask = 15
+visibility_layer = 15
 script = ExtResource("3_f5dfi")
 
 [node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
 texture_filter = 3
-scale = Vector2(0.3, 0.3)
+scale = Vector2(0.4, 0.4)
 texture = ExtResource("4_m202v")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]

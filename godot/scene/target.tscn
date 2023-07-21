@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://bjtcvq5msjbi"]
+
+[ext_resource type="Texture2D" uid="uid://b58qr32nseji2" path="res://assets/cannoli.png" id="1_5taci"]
+[ext_resource type="Script" path="res://scene/target.gd" id="1_18836"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kh7bj"]
+size = Vector2(79, 81)
+
+[node name="target" type="Node2D"]
+
+[node name="Area2D" type="Area2D" parent="."]
+script = ExtResource("1_18836")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+light_mask = 8
+visibility_layer = 8
+position = Vector2(-0.5, 0.5)
+shape = SubResource("RectangleShape2D_kh7bj")
+
+[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_5taci")
