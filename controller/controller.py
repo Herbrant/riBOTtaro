@@ -1,6 +1,8 @@
 import websocket
 import sys
 import math
+import time
+import struct
 from pathlib import Path
 
 CURRENT_POSITION = Path(__file__).parent
@@ -29,12 +31,12 @@ class Cart2DRobot(RoboticSystem):
                                                     0.02, 0.02, 0.24, 2*math.pi/4000.0)
         
         # 5 Nm of max torque, antiwindup
-        self.left_controller = PIDSat(8.0, 3.0, 0.0, 5, True)
-        self.right_controller = PIDSat(8.0, 3.0, 0.0, 5, True)
+        self.left_controller = PIDSat(4.0, 1.0, 0.0, 5, True)
+        self.right_controller = PIDSat(4.0, 1.0, 0.0, 5, True)
 
         # Path controller
-        self.polar_controller = Polar2DController(2.5, 1, 2.0, 1)
-        self.path_controller = Path2D(1, 1.5, 1.5, 0.01)  # tolerance 1cm
+        self.polar_controller = Polar2DController(1, 0.5, 2.0, 0.5)
+        self.path_controller = Path2D(0.5, 0.2, 0.2, 0.05)  # tolerance 1cm
         self.path_controller.set_path([(0, 0)])
         (x, y, _) = self.get_pose()
         self.path_controller.start((x, y))
@@ -43,37 +45,38 @@ class Cart2DRobot(RoboticSystem):
         # Networking
         self.phidias_agent = ''
         self.http_server_thread = start_message_server_http(self)
-        #self.ws = websocket.WebSocket()
-        #self.ws.connect("ws://127.0.0.1:8000")
+        self.ws = websocket.WebSocket()
+        self.ws.connect("ws://127.0.0.1:8000")
 
     def run(self):
-        #self.ws.send("Pippo non mi convalida la materia")
-        pose = self.get_pose()
-        target = self.path_controller.evaluate(self.delta_t, pose)
-        
-        print("Target:", target)
-        
-        if target is not None:
-            # polar control
-            (v_target, w_target) = self.polar_controller.evaluate(self.delta_t, target[0], target[1], pose)
-            vref_l = v_target - w_target * self.cart.encoder_wheelbase / 2.0
-            vref_r = v_target + w_target * self.cart.encoder_wheelbase / 2.0
+        while True:
+            pose = self.get_pose() 
+            target = self.path_controller.evaluate(self.delta_t, pose)
             
-            (vl, vr) = self.cart.get_wheel_speed()
-            # speed control (left, right)
-            Tleft = self.left_controller.evaluate(self.delta_t, vref_l, vl)
-            Tright = self.right_controller.evaluate(self.delta_t, vref_r, vr)
-            
-            # robot model
-            self.cart.evaluate(self.delta_t, Tleft, Tright)
-        else:
-            if not self.target_reached:
-                self.target_reached = True
-                if self.phidias_agent != '':
-                    print("Target")
-                    Messaging.send_belief(self.phidias_agent, 'target_reached', [], 'robot')
-        
-        return True
+            print("Target: ", target) 
+            if target is not None:
+                struct_pose = struct.pack('<3f', *pose) 
+                self.ws.send_binary(struct_pose) 
+                # polar control
+                (v_target, w_target) = self.polar_controller.evaluate(self.delta_t, target[0], target[1], pose)
+                vref_l = v_target - w_target * self.cart.encoder_wheelbase / 2.0
+                vref_r = v_target + w_target * self.cart.encoder_wheelbase / 2.0
+                
+                (vl, vr) = self.cart.get_wheel_speed()
+                # speed control (left, right)
+                Tleft = self.left_controller.evaluate(self.delta_t, vref_l, vl)
+                Tright = self.right_controller.evaluate(self.delta_t, vref_r, vr)
+                
+                # robot model
+                self.cart.evaluate(self.delta_t, Tleft, Tright)
+            else:
+                if not self.target_reached:
+                    self.target_reached = True
+                    if self.phidias_agent != '':
+                        print("Target")
+                        Messaging.send_belief(self.phidias_agent, 'target_reached', [], 'robot')
+                
+                time.sleep(1e-3);        
 
     def get_pose(self):
         return self.cart.get_pose()
@@ -94,8 +97,6 @@ class Cart2DRobot(RoboticSystem):
 
 if __name__ == '__main__':
     cart_robot = Cart2DRobot()
-    #cart_robot.http_server_thread.join()
-    app = QApplication(sys.argv)
-    ex = CartWindow(cart_robot)
-    sys.exit(app.exec_())
+    cart_robot.run() 
+
 
