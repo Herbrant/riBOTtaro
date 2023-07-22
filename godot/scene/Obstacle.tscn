@@ -8,6 +8,8 @@ size = Vector2(55, 55)
 [node name="Obstacle" type="Node2D"]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
+light_mask = 7
+visibility_layer = 7
 
 [node name="Sprite2D" type="Sprite2D" parent="StaticBody2D"]
 texture_filter = 3
