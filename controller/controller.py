@@ -2,7 +2,7 @@ import websocket
 import sys
 import math
 import time
-import struct
+import json
 from pathlib import Path
 
 CURRENT_POSITION = Path(__file__).parent
@@ -31,12 +31,12 @@ class Cart2DRobot(RoboticSystem):
                                                     0.02, 0.02, 0.24, 2*math.pi/4000.0)
         
         # 5 Nm of max torque, antiwindup
-        self.left_controller = PIDSat(4.0, 1.0, 0.0, 5, True)
-        self.right_controller = PIDSat(4.0, 1.0, 0.0, 5, True)
+        self.left_controller = PIDSat(3.0, 2.0, 0.0, 5, True)
+        self.right_controller = PIDSat(3.0, 2.0, 0.0, 5, True)
 
         # Path controller
         self.polar_controller = Polar2DController(1, 0.5, 2.0, 0.5)
-        self.path_controller = Path2D(0.5, 0.2, 0.2, 0.05)  # tolerance 1cm
+        self.path_controller = Path2D(0.5, 0.2, 0.2, 0.5)  # tolerance 10cm
         self.path_controller.set_path([(0, 0)])
         (x, y, _) = self.get_pose()
         self.path_controller.start((x, y))
@@ -50,13 +50,13 @@ class Cart2DRobot(RoboticSystem):
 
     def run(self):
         while True:
-            pose = self.get_pose() 
+            pose = self.get_pose()
             target = self.path_controller.evaluate(self.delta_t, pose)
             
-            print("Target: ", target) 
             if target is not None:
-                struct_pose = struct.pack('<3f', *pose) 
-                self.ws.send_binary(struct_pose) 
+                print("Target: ", target) 
+                self.ws.send(json.dumps(pose))
+                
                 # polar control
                 (v_target, w_target) = self.polar_controller.evaluate(self.delta_t, target[0], target[1], pose)
                 vref_l = v_target - w_target * self.cart.encoder_wheelbase / 2.0
