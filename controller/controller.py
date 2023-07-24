@@ -14,8 +14,6 @@ from lib.controllers.control2d import Polar2DController, Path2D
 from lib.controllers.standard import PIDSat
 from lib.models.robot import RoboticSystem
 from lib.models.cart2d import TwoWheelsCart2DEncodersOdometry
-from PyQt5.QtWidgets import QApplication
-from lib.gui.gui_2d import CartWindow
 
 
 class Cart2DRobot(RoboticSystem):
@@ -31,12 +29,12 @@ class Cart2DRobot(RoboticSystem):
                                                     0.02, 0.02, 0.24, 2*math.pi/4000.0)
         
         # 5 Nm of max torque, antiwindup
-        self.left_controller = PIDSat(3.0, 2.0, 0.0, 5, True)
-        self.right_controller = PIDSat(3.0, 2.0, 0.0, 5, True)
+        self.left_controller = PIDSat(2.0, 2.0, 0.0, 5, True)
+        self.right_controller = PIDSat(2.0, 2.0, 0.0, 5, True)
 
         # Path controller
-        self.polar_controller = Polar2DController(1, 0.5, 2.0, 0.5)
-        self.path_controller = Path2D(0.5, 0.2, 0.2, 0.5)  # tolerance 10cm
+        self.polar_controller = Polar2DController(2, 0.5, 10, 0.5)
+        self.path_controller = Path2D(0.5, 0.5, 0.5, 0.5)  # tolerance 10cm
         self.path_controller.set_path([(0, 0)])
         (x, y, _) = self.get_pose()
         self.path_controller.start((x, y))
