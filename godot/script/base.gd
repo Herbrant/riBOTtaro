@@ -14,22 +14,20 @@ func load_map():
 
 func set_map():
 	var obstacle_scene = load("res://scene/Obstacle.tscn")
-	var target_scene = load("res://scene/target.tscn")
+	#var target_scene = load("res://scene/target.tscn")
 	var screen_size = get_viewport().get_visible_rect().size
 	print(screen_size)
 	
 	var m = load_map()
 	
-	var square_size: Vector2
-	square_size.y = screen_size[1]/len(m)
-	square_size.x = screen_size[0]/len(m[0])
+	var square_size = Vector2(screen_size[0]/len(m), screen_size[1]/len(m[0]))
 	
-	for i in range(len(m) - 1):
+	for i in range(len(m)):
 		for j in range(len(m[i])):
 			if m[i][j] == "1":
 				var obj = obstacle_scene.instantiate()
-				obj.position.y = square_size.y * i + 90
-				obj.position.x = square_size.x * j + 55
+				obj.position.y = square_size.y * i + 25
+				obj.position.x = square_size.x * j + 25
 				
 				add_child(obj)
 #			elif m[i][j] == "X":
@@ -43,5 +41,3 @@ func set_map():
 func _ready():
 	set_map()
 
-func _process(delta):
-	pass

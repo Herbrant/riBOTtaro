@@ -10,11 +10,12 @@ func _ready():
 	screen_size = get_viewport_rect().size
 	server.listen(PORT)
 
-func _process(delta):
+func _process(_delta):
 	var err: Error
+	
 	socket.accept_stream(server.take_connection())
 	socket.poll()
-	
+		
 	var state = socket.get_ready_state()
 	var data
 	
@@ -27,9 +28,12 @@ func _process(delta):
 			
 			if err == OK:
 				data = json.data
+				print(data)
 				
-				position.x = data[0] * screen_size[0] * delta + 25
-				position.y = data[1] * screen_size[1] * delta + 25
+				var x_pos = 25 + data[0] * screen_size[0]
+				var y_pos = 700 - (data[1] * screen_size[1])
+				
+				position = position.lerp(Vector2(x_pos, y_pos), _delta)
 				rotation = data[2]
 				
 				velocity = Vector2.ZERO

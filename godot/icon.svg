@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   preserveAspectRatio="none"
+   x="0px"
+   y="0px"
+   width="80.714394"
+   height="84.217163"
+   viewBox="0 0 80.714394 84.217163"
+   id="svg366"
+   sodipodi:docname="vector_robotsTop (2).svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview368"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="5.3602114"
+     inkscape:cx="173.50062"
+     inkscape:cy="434.12467"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g8698" />
+  <defs
+     id="defs196">
+    <g
+       id="Layer0_0_MEMBER_30_MEMBER_0_FILL">
+      <path
+         fill="#ffffff"
+         stroke="none"
+         d="m 524,264.55 v -0.1 q 0,-1.4 -0.75,-2.45 -0.75,-1 -1.75,-1 -1.05,0 -1.8,1 -0.7,1.05 -0.7,2.45 v 0.1 q 0,1.4 0.7,2.45 0.75,1 1.8,1 1,0 1.75,-1 0.75,-1.05 0.75,-2.45 M 521.5,246 q -1.05,0 -1.8,1 -0.7,1.05 -0.7,2.45 v 0.1 q 0,1.4 0.7,2.45 0.75,1 1.8,1 1,0 1.75,-1 0.75,-1.05 0.75,-2.45 v -0.1 q 0,-1.4 -0.75,-2.45 -0.75,-1 -1.75,-1 z"
+         id="path163" />
+    </g>
+  </defs>
+  <g
+     id="g8698"
+     transform="translate(-155.69702,-377.75893)">
+    <ellipse
+       style="fill:#6fc4a9;fill-opacity:1;stroke-width:1.03059"
+       id="path1261"
+       cx="196.05421"
+       cy="419.86752"
+       rx="40.357201"
+       ry="42.108585" />
+    <ellipse
+       style="fill:#9ae9d0;fill-opacity:1;stroke-width:0.91545"
+       id="path1261-5"
+       cx="189.93297"
+       cy="420.10199"
+       rx="33.521973"
+       ry="40" />
+    <ellipse
+       style="fill:#80d4ba;fill-opacity:1;stroke-width:0.905035"
+       id="path1261-5-7"
+       cx="188.64844"
+       cy="420"
+       rx="32.763538"
+       ry="40" />
+    <g
+       transform="translate(-293.3111,162.88233)"
+       id="g340-1">
+      <use
+         xlink:href="#Layer0_0_MEMBER_30_MEMBER_0_FILL"
+         id="use338-2" />
+    </g>
+  </g>
+</svg>

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://script/base.gd" id="1_7nvgc"]
 [ext_resource type="Texture2D" uid="uid://bk5b24c74hq74" path="res://assets/ground.png" id="2_hae8p"]
 [ext_resource type="Script" path="res://script/CharacterBody2D.gd" id="3_f5dfi"]
-[ext_resource type="Texture2D" uid="uid://brdxn525rh7yc" path="res://assets/robot.png" id="4_m202v"]
+[ext_resource type="Texture2D" uid="uid://ctscj8te47axb" path="res://assets/path1261.png" id="4_w8da8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0l2l0"]
 texture = ExtResource("2_hae8p")
@@ -90,14 +90,14 @@ layer_0/tile_data = PackedInt32Array(-1, 1, 0, 65535, 1, 1, 131071, 1, 2, 196607
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 light_mask = 15
 visibility_layer = 15
-position = Vector2(25, 25)
+position = Vector2(25, 725)
 rotation = 0.000163446
 script = ExtResource("3_f5dfi")
 
 [node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
 texture_filter = 3
-scale = Vector2(0.4, 0.4)
-texture = ExtResource("4_m202v")
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("4_w8da8")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 light_mask = 15
