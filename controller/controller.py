@@ -4,6 +4,8 @@ import math
 import time
 import json
 from pathlib import Path
+from PyQt5.QtWidgets import QApplication
+
 
 CURRENT_POSITION = Path(__file__).parent
 sys.path.append(f"{CURRENT_POSITION}/../")
@@ -14,6 +16,7 @@ from lib.controllers.control2d import Polar2DController, Path2D
 from lib.controllers.standard import PIDSat
 from lib.models.robot import RoboticSystem
 from lib.models.cart2d import TwoWheelsCart2DEncodersOdometry
+from lib.gui.gui_2d import CartWindow
 
 
 class Cart2DRobot(RoboticSystem):
@@ -33,8 +36,8 @@ class Cart2DRobot(RoboticSystem):
         self.right_controller = PIDSat(2.0, 2.0, 0.0, 5, True)
 
         # Path controller
-        self.polar_controller = Polar2DController(2, 0.5, 10, 0.5)
-        self.path_controller = Path2D(0.5, 0.5, 0.5, 0.5)  # tolerance 10cm
+        self.polar_controller = Polar2DController(1, 0.5, 1.5, 2)
+        self.path_controller = Path2D(0.5, 0.2, 0.2, 0.02)  # tolerance 1cm
         self.path_controller.set_path([(0, 0)])
         (x, y, _) = self.get_pose()
         self.path_controller.start((x, y))
@@ -52,6 +55,8 @@ class Cart2DRobot(RoboticSystem):
             target = self.path_controller.evaluate(self.delta_t, pose)
             
             if target is not None:
+                print("Target: ", target) 
+            if target is not None: 
                 print("Target: ", target) 
                 self.ws.send(json.dumps(pose))
                 
@@ -74,7 +79,8 @@ class Cart2DRobot(RoboticSystem):
                         print("Target")
                         Messaging.send_belief(self.phidias_agent, 'target_reached', [], 'robot')
                 
-                time.sleep(1e-3);        
+            time.sleep(1e-3);   
+        #return True     
 
     def get_pose(self):
         return self.cart.get_pose()
@@ -96,5 +102,8 @@ class Cart2DRobot(RoboticSystem):
 if __name__ == '__main__':
     cart_robot = Cart2DRobot()
     cart_robot.run() 
+    # app = QApplication(sys.argv)
+    # ex = CartWindow(cart_robot)
+    # sys.exit(app.exec_())
 
 
