@@ -101,7 +101,6 @@ class Grassfire:
                                       'add_minitarget_reactor', c, 'main')
 
             self.position = (indexes[1], indexes[0])
-            # self.grid.set_starting_cell(self.position)
         else:
             print("No path found.")
 
@@ -115,6 +114,5 @@ if __name__ == "__main__":
         sys.exit(1)
     
     grid = Grid(sys.argv[1])
-    #solver = Grassfire(grid, 55.0, 50)
     solver = Grassfire(grid, 1.0, 1.0)
     solver.run()    
