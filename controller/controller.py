@@ -4,20 +4,15 @@ import math
 import time
 import json
 from pathlib import Path
-from PyQt5.QtWidgets import QApplication
-
 
 CURRENT_POSITION = Path(__file__).parent
 sys.path.append(f"{CURRENT_POSITION}/../")
 
 from lib.phidias.phidias_interface import start_message_server_http, Messaging
-from lib.models.virtual_robot import SpeedProfileGenerator2D, SpeedProfileGenerator
 from lib.controllers.control2d import Polar2DController, Path2D
 from lib.controllers.standard import PIDSat
 from lib.models.robot import RoboticSystem
 from lib.models.cart2d import TwoWheelsCart2DEncodersOdometry
-from lib.gui.gui_2d import CartWindow
-
 
 class Cart2DRobot(RoboticSystem):
 
@@ -102,8 +97,4 @@ class Cart2DRobot(RoboticSystem):
 if __name__ == '__main__':
     cart_robot = Cart2DRobot()
     cart_robot.run() 
-    # app = QApplication(sys.argv)
-    # ex = CartWindow(cart_robot)
-    # sys.exit(app.exec_())
-
 
