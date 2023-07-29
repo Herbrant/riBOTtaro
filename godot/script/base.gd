@@ -1,7 +1,7 @@
 extends Node2D
 
 func load_map():
-	var file = FileAccess.open("res://config/matrix.txt", FileAccess.READ)
+	var file = FileAccess.open("res://config/matrix3.txt", FileAccess.READ)
 	var line = ""
 	var map = []
 	
@@ -20,14 +20,14 @@ func set_map():
 	
 	var m = load_map()
 	
-	var square_size = Vector2(screen_size[0]/len(m), screen_size[1]/len(m[0]))
+	var square_size = Vector2(screen_size[0]/float(len(m[0])), screen_size[1]/float(len(m)))
 	
 	for i in range(len(m)):
 		for j in range(len(m[i])):
 			if m[i][j] == "1":
 				var obj = obstacle_scene.instantiate()
-				obj.position.y = square_size.y * i + 25
-				obj.position.x = square_size.x * j + 25
+				obj.position.y = 52 + square_size.y * i
+				obj.position.x = 40 + square_size.x * j
 				
 				add_child(obj)
 #			elif m[i][j] == "X":
