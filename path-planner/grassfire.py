@@ -68,16 +68,6 @@ class Grassfire:
         indexes = [math.floor(pos[0] / block_size[0]
                                 ), math.floor(pos[1] / block_size[1])]
 
-        # if (indexes[0] < 0):
-        #     indexes[0] = 0
-        # elif (indexes[0] >= self.grid.cols):
-        #     indexes[0] = self.grid.cols - 1
-
-        # if (indexes[1] < 0):
-        #     indexes[1] = 0
-        # elif indexes[1] >= self.grid.rows:
-        #     indexes[1] = self.grid.rows - 1
-
         return indexes
 
     def to_pos(self, indexes):

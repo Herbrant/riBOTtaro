@@ -4,8 +4,6 @@ class Grid:
     GRID_IND_DEFAULT = 0
     GRID_IND_OBSTACLE = 1
     GRID_IND_STARTING_CELL = -1
-    # GRID_IND_DESTINATION_CELL = 2
-    # GRID_IND_PATH = 4
 
     def __init__(self, grid_file):
         self.matrix = np.loadtxt(grid_file)
