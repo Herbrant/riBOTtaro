@@ -49,8 +49,6 @@ class Cart2DRobot(RoboticSystem):
             pose = self.get_pose()
             target = self.path_controller.evaluate(self.delta_t, pose)
             
-            if target is not None:
-                print("Target: ", target) 
             if target is not None: 
                 print("Target: ", target) 
                 self.ws.send(json.dumps(pose))
@@ -71,11 +69,10 @@ class Cart2DRobot(RoboticSystem):
                 if not self.target_reached:
                     self.target_reached = True
                     if self.phidias_agent != '':
-                        print("Target")
+                        print("Target reached...")
                         Messaging.send_belief(self.phidias_agent, 'target_reached', [], 'robot')
                 
-            time.sleep(1e-3);   
-        #return True     
+            time.sleep(1e-3);  
 
     def get_pose(self):
         return self.cart.get_pose()
