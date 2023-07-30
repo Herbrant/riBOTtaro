@@ -31,7 +31,7 @@ class Cart2DRobot(RoboticSystem):
         self.right_controller = PIDSat(2.0, 2.0, 0.0, 5, True)
 
         # Path controller
-        self.polar_controller = Polar2DController(1.5, 0.5, 3, 12)
+        self.polar_controller = Polar2DController(1.5, 0.5, 8, 4)
         self.path_controller = Path2D(0.5, 0.2, 0.2, 0.01)  # tolerance 1cm
         self.path_controller.set_path([(0, 0)])
         (x, y, _) = self.get_pose()
