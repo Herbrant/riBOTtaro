@@ -92,7 +92,6 @@ process_mode = 3
 light_mask = 15
 visibility_layer = 15
 position = Vector2(25, 725)
-rotation = 0.000163446
 motion_mode = 1
 script = ExtResource("3_f5dfi")
 
