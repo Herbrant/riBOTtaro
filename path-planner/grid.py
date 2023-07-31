@@ -7,6 +7,10 @@ class Grid:
 
     def __init__(self, grid_file):
         self.matrix = np.loadtxt(grid_file)
+        print(self.matrix)
+        self.matrix = np.rot90(self.matrix, 2)
+        self.matrix = np.fliplr(self.matrix)
+        print(self.matrix)
         self.rows = len(self.matrix)
         self.cols = len(self.matrix[0])
 
