@@ -35,8 +35,10 @@ func _process(_delta):
 					var x_pos = 25  + data[0] * screen_size[0]
 					var y_pos = 725 - (data[1] * screen_size[1])
 					
+					
+					if rotation_degrees != -rad_to_deg(data[2]):
+						rotation_degrees = -(180 - rad_to_deg(data[2]))
 					position = position.lerp(Vector2(x_pos, y_pos), _delta)
-					rotation_degrees = -(180 - rad_to_deg(data[2]))
 
 					#velocity = Vector2.ZERO
 					#move_and_slide()

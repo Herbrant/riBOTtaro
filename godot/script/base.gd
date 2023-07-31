@@ -1,7 +1,7 @@
 extends Node2D
 
 func load_map():
-	var file = FileAccess.open("res://config/matrix3.txt", FileAccess.READ)
+	var file = FileAccess.open("res://config/A.txt", FileAccess.READ)
 	var line = ""
 	var map = []
 	
